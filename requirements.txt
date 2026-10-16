@@ -1,4 +1,12 @@
-pyaudio
+# App deps. NOT tracked by Hermes' pm/uv.lock -- if a pm reprovision wipes the
+# interpreter's site-packages, restore with:
+#   source hermes-agent/activate && pip install -r requirements.txt
 numpy
+pyaudio
 openwakeword
-moonshine_voice
+moonshine-voice
+dashscope
+# dashscope's own deps, spelled out so a pm wipe + reinstall is one command:
+requests
+aiohttp
+websocket-client

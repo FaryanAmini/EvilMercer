@@ -1,1 +1,4 @@
 /hermes-agent
+.env
+app_libs/
+__pycache__/
