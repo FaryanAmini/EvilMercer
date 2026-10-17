@@ -6,7 +6,7 @@ set -e
 cd "$(dirname "$0")"
 . ./hermes-agent/activate
 if ! PYTHONPATH="$PWD/app_libs${PYTHONPATH:+:$PYTHONPATH}" \
-     python3 -c "import numpy, pyaudio, openwakeword, moonshine_voice, dashscope" 2>/dev/null; then
+     python3 -c "import numpy, pyaudio, openwakeword, moonshine_voice, sounddevice" 2>/dev/null; then
     echo "[run.sh] app deps missing -- installing into ./app_libs"
     python3 -m pip install -q --target app_libs -r requirements.txt
 fi

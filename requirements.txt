@@ -5,8 +5,5 @@ numpy
 pyaudio
 openwakeword
 moonshine-voice
-dashscope
-# dashscope's own deps, spelled out so a pm wipe + reinstall is one command:
-requests
-aiohttp
-websocket-client
+# Local TTS (qwen-tts + torch) lives in its own .venv-tts -- see tts_server.py;
+# deliberately NOT here (it needs Python 3.12, Hermes' interpreter is 3.14).

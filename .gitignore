@@ -1,5 +1,6 @@
 /hermes-agent
 .env
 app_libs/
+.venv-tts/
 __pycache__/
 /visuals

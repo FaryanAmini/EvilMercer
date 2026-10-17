@@ -56,46 +56,28 @@ hermes_agent = AIAgent(
 )
 
 #  Qwen TTS via the dashscope SDK
-# the international (Singapore) region, also set in .env:
-#   DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v1
-DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
-DASHSCOPE_BASE_URL = os.getenv("DASHSCOPE_BASE_URL", "")  # empty = SDK default (mainland)
-TTS_MODEL = os.getenv("TTS_MODEL", "qwen3-tts-flash")
-TTS_VOICE = os.getenv("TTS_VOICE", "Dolce")
+# --- Local Qwen3-TTS via tts_server.py (own .venv-tts + GPU; see that file).
+# Start the server BEFORE launching the assistant; if it's down, speak() just
+# prints an error and the text-only flow keeps working.
+LOCAL_TTS_URL = os.getenv("LOCAL_TTS_URL", "http://127.0.0.1:8055/tts")
 
 def speak(text):
-    """Synthesize text via qwen3-tts and block until playback finishes."""
+    """Synthesize text via the local TTS server and block until playback ends."""
     if not text:
-        return
-    if not DASHSCOPE_API_KEY:
-        print("[TTS error: DASHSCOPE_API_KEY not set in .env]")
         return
     try:
         import io
+        import json
         import urllib.request
         import wave
         import sounddevice as sd
-        import dashscope
-    except ImportError as e:
-        # May be dashscope itself OR one of its sub-deps (requests/aiohttp/...)
-        print(f"[TTS error: import failed ({e}) -- run ./run.sh once to heal ./app_libs]")
-        return
 
-    try:
-        if DASHSCOPE_BASE_URL:
-            dashscope.base_http_api_url = DASHSCOPE_BASE_URL
-        response = dashscope.audio.qwen_tts.SpeechSynthesizer.call(
-            model=TTS_MODEL,
-            api_key=DASHSCOPE_API_KEY,
-            text=text,
-            voice=TTS_VOICE,
+        req = urllib.request.Request(
+            LOCAL_TTS_URL,
+            data=json.dumps({"text": text}).encode(),
+            headers={"Content-Type": "application/json"},
         )
-        if response.status_code != 200:
-            raise RuntimeError(f"dashscope {response.status_code}: {response.message}")
-
-        # qwen3-tts hands back a URL to the synthesized audio file.
-        audio_url = response.output["audio"]["url"]
-        wav_bytes = urllib.request.urlopen(audio_url, timeout=30).read()
+        wav_bytes = urllib.request.urlopen(req, timeout=120).read()
 
         with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
             rate = wf.getframerate()
