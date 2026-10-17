@@ -51,7 +51,7 @@ hermes_agent = AIAgent(
     model=HERMES_MODEL,
     api_mode="chat_completions",  # plain OpenAI wire; skips Hermes' provider URL sniffing
     quiet_mode=True,
-    #request_overrides={"extra_body": {"enable_thinking": False}},
+    request_overrides={"extra_body": {"enable_thinking": False}},
 
 )
 
@@ -116,7 +116,7 @@ SYSTEM_PROMPT = (
     "for the ear: plain spoken sentences only. Never use markdown, bullet lists, "
     "code blocks, emojis, or URLs. Say numbers and abbreviations the way they "
     "should be read aloud. Keep answers to one or two short sentences unless the "
-    "user asks for more."
+    "user asks for more. if asked to display things do it on the external monitor, not the laptop displays."
 )
 
 wakeModel = Model(wakeword_model_paths=[openwakeword.models["alexa"]["model_path"]])

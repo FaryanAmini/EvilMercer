@@ -2,3 +2,4 @@
 .env
 app_libs/
 __pycache__/
+/visuals
