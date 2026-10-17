@@ -60,6 +60,9 @@ hermes_agent = AIAgent(
 # Start the server BEFORE launching the assistant; if it's down, speak() just
 # prints an error and the text-only flow keeps working.
 LOCAL_TTS_URL = os.getenv("LOCAL_TTS_URL", "http://127.0.0.1:8055/tts")
+# Playback gain -- phone-model TTS output tends to be hot; 0.7-0.8 is a
+# comfortable TV-ish level. Tune in .env if you like.
+TTS_VOLUME = float(os.getenv("TTS_VOLUME", "0.7"))
 
 def speak(text):
     """Synthesize text via the local TTS server and block until playback ends."""
@@ -85,6 +88,7 @@ def speak(text):
             samples = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16)
         if channels == 2:
             samples = samples.reshape(-1, 2)
+        samples = (samples.astype(np.float32) * TTS_VOLUME).astype(np.int16)
         sd.play(samples, samplerate=rate)
         sd.wait()  # don't return until the speakers go quiet -- mic cleanup depends on this
     except Exception as e:
@@ -94,7 +98,7 @@ def speak(text):
 # Written for the ear: the reply is fed straight into TTS, so any markdown,
 # bullets, code blocks, or URLs would be read out literally.
 SYSTEM_PROMPT = (
-    "You are a voice assistant. Your replies are converted to speech, so write "
+    "You are a voice assistant. Your name is Evil Mercer. Be a little evil in your reply's but like a cartoon villian. mildly. Your replies are converted to speech, so write "
     "for the ear: plain spoken sentences only. Never use markdown, bullet lists, "
     "code blocks, emojis, or URLs. Say numbers and abbreviations the way they "
     "should be read aloud. Keep answers to one or two short sentences unless the "
